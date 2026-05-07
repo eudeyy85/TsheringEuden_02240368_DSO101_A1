@@ -15,10 +15,12 @@ db.connect()
 module.exports = db;
 
 db.query(`
-CREATE TABLE IF NOT EXISTS tasks (
-  id SERIAL PRIMARY KEY,
-  title VARCHAR(255) NOT NULL,
-  completed BOOLEAN DEFAULT false
-)
-`);
+  CREATE TABLE IF NOT EXISTS tasks (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    completed BOOLEAN DEFAULT false
+  )
+`)
+  .then(() => console.log("Tasks table ready"))
+  .catch((err) => console.log("Table creation failed:", err));
 
