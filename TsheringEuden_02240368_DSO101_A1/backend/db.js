@@ -13,3 +13,12 @@ db.connect()
   .catch((err) => console.log("Database connection failed:", err));
 
 module.exports = db;
+
+db.query(`
+CREATE TABLE IF NOT EXISTS tasks (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  completed BOOLEAN DEFAULT false
+)
+`);
+
