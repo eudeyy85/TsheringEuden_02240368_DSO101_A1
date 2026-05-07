@@ -2,8 +2,8 @@ services:
   - type: web
     name: be-todolist-b
     runtime: docker
-    dockerfilePath: ./TsheringEuden_02240368_DSO101_A1/backend/Dockerfile
-    dockerContext: ./TsheringEuden_02240368_DSO101_A1/backend
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
     plan: free
     envVars:
       - key: PORT
@@ -12,8 +12,8 @@ services:
   - type: web
     name: fe-todolist-b
     runtime: docker
-    dockerfilePath: ./TsheringEuden_02240368_DSO101_A1/frontend/Dockerfile
-    dockerContext: ./TsheringEuden_02240368_DSO101_A1/frontend
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
     plan: free
     envVars:
       - key: VITE_API_URL
