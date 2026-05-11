@@ -13,21 +13,25 @@ pipeline {
         }
         stage('Install') {
             steps {
-                bat 'npm install'
+                dir('TsheringEuden_02240368_DSO101_A1/backend') {
+                    bat 'npm install'
+                }
             }
         }
         stage('Build') {
             steps {
-                bat 'echo Build done'
+                echo 'Build done'
             }
         }
         stage('Test') {
             steps {
-                bat 'npm test'
+                dir('TsheringEuden_02240368_DSO101_A1/backend') {
+                    bat 'npm test'
+                }
             }
             post {
                 always {
-                    junit 'junit.xml'
+                    junit 'TsheringEuden_02240368_DSO101_A1/backend/junit.xml'
                 }
             }
         }
