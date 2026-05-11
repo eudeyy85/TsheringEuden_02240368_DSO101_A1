@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    tools {
+        nodejs 'NodeJS'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/eudeyy85/TsheringEuden_02240368_DSO101_A1.git',
+                    credentialsId: 'github-creds'
+            }
+        }
+        stage('Install') {
+            steps {
+                bat 'npm install'
+            }
+        }
+        stage('Build') {
+            steps {
+                bat 'echo Build done'
+            }
+        }
+        stage('Test') {
+            steps {
+                bat 'npm test'
+            }
+            post {
+                always {
+                    junit 'junit.xml'
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs.'
+        }
+    }
+}
