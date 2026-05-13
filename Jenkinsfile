@@ -17,7 +17,7 @@ pipeline {
         }
         stage('Install') {
             steps {
-                dir('TsheringEuden_02240368_DSO101_A1/backend') {
+                dir('backend') {
                     bat 'npm install'
                 }
             }
