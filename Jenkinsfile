@@ -29,37 +29,36 @@ pipeline {
         }
         stage('Test') {
             steps {
-                dir('TsheringEuden_02240368_DSO101_A1/backend') {
+                dir('backend') {
                     bat 'npm test'
                 }
             }
             post {
                 always {
-                    junit 'TsheringEuden_02240368_DSO101_A1/backend/junit.xml'
+                    junit 'backend/junit.xml'
                 }
             }
         }
         stage('Docker Build & Push') {
             steps {
                 withCredentials([string(credentialsId: 'docker-hub-token', variable: 'DOCKER_TOKEN')]) {
-                     dir('TsheringEuden_02240368_DSO101_A1/backend') {
-                         bat "docker login -u 02240368 -p %DOCKER_TOKEN%"
-                         bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
-                         bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
-                         bat "docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest"
-                         bat "docker push %DOCKER_IMAGE%:latest"
-                     }
+                    dir('backend') {
+                        bat "docker login -u 02240368 -p %DOCKER_TOKEN%"
+                        bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
+                        bat "docker push %DOCKER_IMAGE%:%DOCKER_TAG%"
+                        bat "docker tag %DOCKER_IMAGE%:%DOCKER_TAG% %DOCKER_IMAGE%:latest"
+                        bat "docker push %DOCKER_IMAGE%:latest"
+                    }
                 }
             }
         }
-    
-        post {
-            success {
-                echo 'Pipeline completed successfully!'
-            }
-            failure {
-                echo 'Pipeline failed. Check the logs.'
-            }
+    }
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed. Check the logs.'
         }
     }
 }
