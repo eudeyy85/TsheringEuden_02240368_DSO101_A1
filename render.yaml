@@ -1,21 +1,24 @@
 services:
-  - type: web
-    name: be-todolist-b
-    runtime: docker
-    dockerfilePath: ./TsheringEuden_02240368_DSO101_A1/backend/Dockerfile
-    dockerContext: ./TsheringEuden_02240368_DSO101_A1/backend
-    plan: free
+
+  - type: web              # web = accessible via browser
+    name: be-todolist-b    # service name on Render
+    runtime: docker        # build using Docker
+    dockerfilePath: ./TsheringEuden_02240368_DSO101_A1/backend/Dockerfile  # where the Dockerfile is
+    dockerContext: ./TsheringEuden_02240368_DSO101_A1/backend              # folder to copy files from
+    plan: free             # free tier
     envVars:
-      - key: PORT
+      - key: PORT          # port the backend listens on
         value: 5000
 
-  - type: web
-    name: fe-todolist-b
-    runtime: docker
-    dockerfilePath: ./TsheringEuden_02240368_DSO101_A1/frontend/Dockerfile
-    dockerContext: ./TsheringEuden_02240368_DSO101_A1/frontend
-    plan: free
+  - type: web              # web = accessible via browser
+    name: fe-todolist-b    # service name on Render
+    runtime: docker        # build using Docker
+    dockerfilePath: ./TsheringEuden_02240368_DSO101_A1/frontend/Dockerfile # where the Dockerfile is
+    dockerContext: ./TsheringEuden_02240368_DSO101_A1/frontend             # folder to copy files from
+    plan: free             # free tier
     envVars:
-      - key: VITE_API_URL
+      - key: VITE_API_URL  # backend URL the frontend talks to
         value: https://be-todolist-b.onrender.com
+
+
         

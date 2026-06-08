@@ -1,29 +1,42 @@
+# Name of the workflow — appears in GitHub Actions tab
 name: CI/CD Pipeline
 
+# Trigger: runs automatically when code is pushed to main branch
 on:
   push:
     branches: ["main"]
 
 jobs:
+  # Job name: build-and-deploy
+  # runs-on: GitHub provides a fresh Ubuntu virtual machine for this job
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Downloads your repo code onto the Ubuntu machine
+      # Without this, the runner has no access to your files or Dockerfile
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Step 2: Logs into DockerHub using credentials stored in GitHub Secrets
+      # ${{ secrets.NAME }} pulls the value securely — never hardcoded in code
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Step 3: Builds the Docker image from the Dockerfile in the backend/ folder
+      # Tags it as username/todo-app:latest
+      # Then pushes (uploads) the image to your DockerHub repository
       - name: Build and Push Docker Image
         run: |
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest ./backend
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/todo-app:latest
 
+      # Step 4: Sends a POST request to Render's webhook URL
+      # This tells Render to pull the new Docker image and redeploy automatically
+      # The webhook URL is stored securely as RENDER_DEPLOY_HOOK in GitHub Secrets
       - name: Trigger Render Deployment
         run: |
           curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
-          
