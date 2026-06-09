@@ -431,46 +431,201 @@ The `Jenkinsfile` is committed to the root of the GitHub repository (`TsheringEu
 - Directory paths were wrong and had to be changed from `TsheringEuden_02240368_DSO101_A1/backend` to just `backend`.
 - Pipeline was initially using simple echo statements instead of the real Jenkinsfile from SCM.
 
-# Assignment III — GitHub Actions CI/CD
+# Assignment III – CI/CD Pipeline Report
 
-## Steps Taken
+---
 
-### Step 1: Created GitHub Actions workflow file
-Created `.github/workflows/deploy.yml` with 4 automated steps.
+## 1. Objective
 
-<!-- Screenshot: deploy.yml open in VS Code -->
-![deploy.yml]()
+This assignment involves setting up a complete CI/CD pipeline using GitHub Actions to automate building a Docker container, pushing it to DockerHub, and deploying it on Render.com — all triggered automatically whenever code is pushed to the `main` branch.
 
-### Step 2: Added GitHub Secrets
-Added 3 secrets under Settings > Secrets and variables > Actions.
+---
 
-<!-- Screenshot: GitHub secrets page showing all 3 secrets -->
-![GitHub Secrets]()
+## 2. Tools & Technologies Used
 
-### Step 3: Pushed code to trigger the workflow
-Pushed the workflow file to main branch which triggered the pipeline automatically.
+| Tool | Purpose |
+|---|---|
+| GitHub | Hosts the source code repository. |
+| GitHub Actions | Automates the CI/CD workflow. |
+| Docker | Packages the application into a container. |
+| DockerHub | Stores and shares Docker images. |
+| Render.com | Cloud platform to deploy the container. |
+| Node.js | Backend runtime environment. |
 
-### Step 4: GitHub Actions ran successfully
-All steps completed in 26 seconds.
+---
 
-<!-- Screenshot: GitHub Actions showing all steps green -->
-![GitHub Actions Success]()
+## 3. Task 1 – GitHub Repository Setup
 
-<!-- Screenshot: GitHub Actions detail showing Checkout, Login, Build & Push, Trigger Render all green -->
-![GitHub Actions Steps]()
+### 3.1 Repository Structure
 
-### Step 5: Docker image pushed to DockerHub automatically
-<!-- Screenshot: DockerHub showing 02240368/todo-app pushed "X minutes ago" -->
-![DockerHub Image]()
+The GitHub repository `TsheringEuden_02240368_DSO101_A1` was confirmed as **public** so that DockerHub and Render.com can access the code without authentication issues.
 
-### Step 6: Render.com redeployed automatically
-<!-- Screenshot: Render.com todo-app-a3 showing Live status -->
-![Render Deployment]()
+```
+TsheringEuden_02240368_DSO101_A1/
+├── .github/workflows/deploy.yml   # GitHub Actions workflow file
+├── backend/                       # Node.js backend with its Dockerfile
+├── frontend/                      # React frontend with its Dockerfile
+├── Jenkinsfile                    # Used for Assignment 2
+├── README.md                      # Project documentation
+└── render.yaml                    # Render deployment config
+```
 
-<!-- Screenshot: Browser showing https://todo-app-a3.onrender.com "Backend is working!" -->
-![Live App]()
+---
 
-## Challenges Faced
-- Docker push failed initially because the DockerHub repository did not exist — had to push manually first.
-- Git push was rejected due to diverged history. Resolved using `git pull --rebase` and force push.
-- node_modules was accidentally tracked by Git causing large commits on Windows.
+## 4. Task 2 – Docker Setup
+
+### 4.1 Dockerfile
+
+A `Dockerfile` was created inside the `backend/` folder defining how the container image is built.
+![alt text](image-39.png)
+
+---
+
+### 4.2 Local Docker Build & Push
+
+Before setting up automation, the Docker image was built and pushed manually to verify it works:
+
+```bash
+docker build -t 02240368/todo-app:latest .
+```
+> Builds the Docker image from the Dockerfile and tags it as `02240368/todo-app:latest`. The format is `username/repo-name:version`.
+
+```bash
+docker login
+```
+> Logs into DockerHub using saved credentials (username: `02240368`).
+
+```bash
+docker push 02240368/todo-app:latest
+```
+> Uploads the built image to DockerHub. The terminal confirmed each layer was pushed and showed the final digest hash.
+
+---
+
+### 4.3 DockerHub Account & Token Setup
+
+A **personal access token** was created on DockerHub to allow GitHub Actions to log in securely:
+
+- Token name: `github-actions`
+- Permissions: **Read, Write, Delete**
+- Repository: `todo-app` — set to **Public** visibility
+
+---
+
+## 5. Task 3 – GitHub Actions Workflow
+
+### 5.1 `deploy.yml` Pipeline Configuration
+
+The workflow file at `.github/workflows/deploy.yml` defines the full CI/CD pipeline triggered on every push to `main`.
+![alt text](image-40.png)
+
+---
+
+### 5.2 GitHub Secrets Added
+
+Three secrets were added under **Settings → Secrets and Variables → Actions**:
+
+| Secret Name | Value |
+|---|---|
+| `DOCKERHUB_USERNAME` | DockerHub username (`02240368`) |
+| `DOCKERHUB_TOKEN` | DockerHub personal access token |
+| `RENDER_DEPLOY_HOOK` | Render webhook URL to trigger redeployment |
+
+---
+
+### 5.3 Successful GitHub Actions Workflow Run
+![alt text](image-41.png)
+After pushing the commit `"Add GitHub Actions CI/CD workflow"` to `main`, the Actions tab showed a successful run:
+
+- **Status:** ✅ Success
+- **Duration:** 26 seconds
+- **Trigger:** `deploy.yml` on push
+
+**Steps completed:**
+1. Checkout
+2. Login to DockerHub
+3. Build & Push
+4. Trigger Render Deployment
+
+---
+
+## 6. Task 4 – Deployment on Render.com
+
+### 6.1 Creating the Web Service
+
+A new **Web Service** was created on Render.com using the **Existing Image** option:
+
+- **Image URL:** `docker.io/02240368/todo-app:latest`
+- **Service name:** `todo-app-a3`
+- **Region:** Ohio
+- **Instance type:** Free
+![alt text](image-42.png)
+![alt text](image-43.png)
+![alt text](image-44.png)
+![alt text](image-45.png)
+![alt text](image-46.png)
+
+---
+
+### 6.2 Environment Variables
+
+Environment variables were added on Render matching the backend `.env` file:
+
+| Variable | Description |
+|---|---|
+| `PORT` | Port the backend listens on |
+| `DB_HOST` | Database host |
+| `DB_USER` | Database username |
+| `DB_PASSWORD` | Database password |
+| `DB_NAME` | Database name |
+![alt text](image-47.png)
+
+
+---
+
+### 6.3 Deploy Hook Configuration
+
+After the service was created, the **Deploy Hook URL** was copied from Render Settings and added as `RENDER_DEPLOY_HOOK` in GitHub Secrets. This connects GitHub Actions to Render so every push triggers an automatic redeployment.
+![alt text](image-48.png)
+
+---
+
+### 6.4 Live Deployment
+
+The service was successfully deployed and went **Live on May 13, 2026 at 4:08 PM**:
+
+- Render logs showed: `"Your service is live"`
+![alt text](image-50.png)
+- Browser confirmed: `"Backend is working!"` at `todo-app-a3.onrender.com`
+![alt text](image-49.png)
+![alt text](image-51.png)
+
+---
+
+## 7. Challenges Faced
+
+**1. DockerHub Image Visibility**
+Initially the image was private, causing Render to show `"No public image found"`.
+**Fix:** Set the DockerHub repository visibility to **Public**.
+
+**2. Render Auto-Redeploy**
+Render does not auto-redeploy when a new image is pushed to DockerHub.
+**Fix:** Added a `curl -X POST` webhook step in the GitHub Actions workflow.
+
+**3. Secret Naming**
+The secrets in `deploy.yml` must exactly match the names in GitHub Settings. Any typo causes the workflow to fail.
+
+**4. Failed Deployments**
+The `be-todolist-b` and `fe-todolist-b` services showed `Failed deploy` from an older workflow.
+**Fix:** Created a fresh `todo-app-a3` service, which worked correctly.
+
+---
+
+## 8. Deployment Links
+
+| | Link |
+|---|---|
+| **Live Application** | https://todo-app-a3.onrender.com |
+| **GitHub Repository** | https://github.com/eudeyy85/TsheringEuden_02240368_DSO101_A1 |
+
+
