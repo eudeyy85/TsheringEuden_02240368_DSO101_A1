@@ -537,7 +537,7 @@ Three secrets were added under **Settings → Secrets and Variables → Actions*
 ![alt text](image-41.png)
 After pushing the commit `"Add GitHub Actions CI/CD workflow"` to `main`, the Actions tab showed a successful run:
 
-- **Status:** ✅ Success
+- **Status:**  Success
 - **Duration:** 26 seconds
 - **Trigger:** `deploy.yml` on push
 
